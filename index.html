@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rutina Militar</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e0e0e0;
+      --text-dim: #666;
+      --accent: #22c55e;
+      --accent-dim: rgba(34, 197, 94, 0.15);
+      --danger: #ef4444;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px 100px;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0 10px;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    header .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .date-info {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin: 8px 0 24px;
+    }
+
+    .date-info .day-type {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .day-type.weekday {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .day-type.weekend {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .day-type.holiday {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    .progress-section {
+      margin-bottom: 28px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-header span {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .progress-percent {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .task-item:active {
+      transform: scale(0.98);
+    }
+
+    .task-item.done {
+      opacity: 0.4;
+      border-color: transparent;
+    }
+
+    .task-item.done .task-time {
+      text-decoration: line-through;
+    }
+
+    .task-item.active {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .task-time {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      min-width: 44px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .task-item.active .task-time {
+      color: var(--accent);
+    }
+
+    .task-name {
+      flex: 1;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .task-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      color: transparent;
+    }
+
+    .task-item.done .task-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    .task-item.active .task-btn {
+      border-color: var(--accent);
+    }
+
+    .task-item:not(.done):not(.active) .task-btn:hover {
+      border-color: var(--text-dim);
+    }
+
+    .check-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 16px 0;
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .reset-btn {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-item {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .task-item:nth-child(1) { animation-delay: 0.02s; }
+    .task-item:nth-child(2) { animation-delay: 0.04s; }
+    .task-item:nth-child(3) { animation-delay: 0.06s; }
+    .task-item:nth-child(4) { animation-delay: 0.08s; }
+    .task-item:nth-child(5) { animation-delay: 0.10s; }
+    .task-item:nth-child(6) { animation-delay: 0.12s; }
+    .task-item:nth-child(7) { animation-delay: 0.14s; }
+    .task-item:nth-child(8) { animation-delay: 0.16s; }
+    .task-item:nth-child(9) { animation-delay: 0.18s; }
+    .task-item:nth-child(10) { animation-delay: 0.20s; }
+    .task-item:nth-child(11) { animation-delay: 0.22s; }
+    .task-item:nth-child(12) { animation-delay: 0.24s; }
+    .task-item:nth-child(13) { animation-delay: 0.26s; }
+    .task-item:nth-child(14) { animation-delay: 0.28s; }
+    .task-item:nth-child(15) { animation-delay: 0.30s; }
+
+    .weekend-banner {
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 16px;
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 10px;
+      font-size: 0.75rem;
+      color: #c084fc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header>
+    <h1>RUTINA MILITAR</h1>
+    <div class="subtitle">Disciplina al maximo</div>
+  </header>
+
+  <div class="date-info" id="dateInfo"></div>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span>Disciplina</span>
+      <div class="progress-percent" id="progressPercent">0%</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="task-list" id="taskList"></div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-value" id="statDone">0</div>
+      <div class="stat-label">Completadas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="statStreak">0</div>
+      <div class="stat-label">Dias seguidos</div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetDay()">Reiniciar dia</button>
+</div>
+
+<canvas class="confetti" id="confetti"></canvas>
+
+<script>
+const ROUTINES = {
+  weekday: [
+    { time: '04:00', name: 'Despertar' },
+    { time: '04:10', name: 'Ejercicio fisico intenso' },
+    { time: '05:30', name: 'Aseo personal y orden' },
+    { time: '06:00', name: 'Desayuno alto en proteinas' },
+    { time: '06:30', name: 'Entrenamiento mental' },
+    { time: '07:30', name: 'Entrenamiento tactico' },
+    { time: '10:00', name: 'Comida' },
+    { time: '10:30', name: 'Entrenamiento fisico 2' },
+    { time: '13:00', name: 'Estudio / Especializacion' },
+    { time: '15:00', name: 'Mision / Practicas' },
+    { time: '18:00', name: 'Cena' },
+    { time: '19:00', name: 'Revision y planificacion' },
+    { time: '21:00', name: 'Preparacion para dormir' },
+    { time: '21:30', name: 'Dormir' },
+  ],
+  weekend: [
+    { time: '06:00', name: 'Despertar' },
+    { time: '06:15', name: 'Ejercicio ligero' },
+    { time: '07:00', name: 'Aseo personal' },
+    { time: '07:30', name: 'Desayuno' },
+    { time: '08:00', name: 'Estudio / Lectura libre' },
+    { time: '10:00', name: 'Actividades recreativas' },
+    { time: '12:00', name: 'Almuerzo' },
+    { time: '14:00', name: 'Tiempo libre productivo' },
+    { time: '17:00', name: 'Ejercicio opcional' },
+    { time: '19:00', name: 'Cena' },
+    { time: '20:00', name: 'Revision del dia' },
+    { time: '21:00', name: 'Relajacion' },
+    { time: '21:30', name: 'Dormir' },
+  ]
+};
+
+const COLOMBIAN_HOLIDAYS_2026 = [
+  '2026-01-01', '2026-01-12', '2026-03-23', '2026-04-02',
+  '2026-04-03', '2026-05-01', '2026-05-18', '2026-06-08',
+  '2026-06-29', '2026-07-20', '2026-08-07', '2026-08-17',
+  '2026-10-12', '2026-11-02', '2026-11-16', '2026-12-08', '2026-12-25'
+];
+
+function isWeekend() {
+  const day = new Date().getDay();
+  return day === 0 || day === 6;
+}
+
+function isHoliday() {
+  const today = new Date().toISOString().split('T')[0];
+  return COLOMBIAN_HOLIDAYS_2026.includes(today);
+}
+
+function getTodayKey() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function loadProgress() {
+  const key = 'routine_' + getTodayKey();
+  return JSON.parse(localStorage.getItem(key) || '{}');
+}
+
+function saveProgress(progress) {
+  const key = 'routine_' + getTodayKey();
+  localStorage.setItem(key, JSON.stringify(progress));
+}
+
+function loadStreak() {
+  return parseInt(localStorage.getItem('streak') || '0');
+}
+
+function saveStreak(n) {
+  localStorage.setItem('streak', n.toString());
+}
+
+function updateStreak() {
+  const progress = loadProgress();
+  const routine = getCurrentRoutine();
+  const allDone = routine.every((_, i) => progress[i]);
+  
+  if (allDone) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = yesterday.toISOString().split('T')[0];
+    const yesterdayDone = localStorage.getItem('routine_' + yesterdayKey);
+    
+    if (yesterdayDone) {
+      const yp = JSON.parse(yesterdayDone);
+      const allYesterday = routine.every((_, i) => yp[i]);
+      if (allYesterday) {
+        saveStreak(loadStreak() + 1);
+      } else {
+        saveStreak(1);
+      }
+    } else {
+      saveStreak(1);
+    }
+  }
+}
+
+function getCurrentRoutine() {
+  if (isHoliday()) return ROUTINES.weekend;
+  if (isWeekend()) return ROUTINES.weekend;
+  return ROUTINES.weekday;
+}
+
+function getDayType() {
+  if (isHoliday()) return { label: 'Festivo', cls: 'holiday' };
+  if (isWeekend()) return { label: 'Fin de semana', cls: 'weekend' };
+  return { label: 'Dia de entrenamiento', cls: 'weekday' };
+}
+
+function formatDate() {
+  const now = new Date();
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  return days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+}
+
+function updateHighlight() {
+  const now = new Date();
+  const currentMin = now.getHours() * 60 + now.getMinutes();
+  const routine = getCurrentRoutine();
+  let activeIdx = -1;
+  
+  for (let i = routine.length - 1; i >= 0; i--) {
+    const [h, m] = routine[i].time.split(':').map(Number);
+    if (currentMin >= h * 60 + m) {
+      activeIdx = i;
+      break;
+    }
+  }
+  
+  document.querySelectorAll('.task-item').forEach((el, i) => {
+    el.classList.toggle('active', i === activeIdx);
+  });
+}
+
+function render() {
+  const routine = getCurrentRoutine();
+  const progress = loadProgress();
+  const doneCount = Object.values(progress).filter(Boolean).length;
+  const percent = Math.round((doneCount / routine.length) * 100);
+
+  document.getElementById('dateInfo').innerHTML = 
+    formatDate() + '<br><span class="day-type ' + getDayType().cls + '">' + getDayType().label + '</span>';
+
+  document.getElementById('progressPercent').textContent = percent + '%';
+  document.getElementById('progressFill').style.width = percent + '%';
+  document.getElementById('statDone').textContent = doneCount;
+  document.getElementById('statTotal').textContent = routine.length;
+  document.getElementById('statStreak').textContent = loadStreak();
+
+  const list = document.getElementById('taskList');
+  list.innerHTML = routine.map((task, i) => 
+    '<div class="task-item' + (progress[i] ? ' done' : '') + '" data-idx="' + i + '">' +
+      '<span class="task-time">' + task.time + '</span>' +
+      '<span class="task-name">' + task.name + '</span>' +
+      '<div class="task-btn">' +
+        '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+          '<polyline points="20 6 9 17 4 12"></polyline>' +
+        '</svg>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+
+  document.querySelectorAll('.task-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.idx);
+      progress[idx] = !progress[idx];
+      saveProgress(progress);
+      updateStreak();
+      render();
+      
+      const allDone = routine.every((_, i) => progress[i]);
+      if (allDone) launchConfetti();
+    });
+  });
+
+  updateHighlight();
+}
+
+function resetDay() {
+  if (confirm('Reiniciar progreso del dia?')) {
+    localStorage.removeItem('routine_' + getTodayKey());
+    render();
+  }
+}
+
+function launchConfetti() {
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const particles = [];
+  const colors = ['#22c55e', '#60a5fa', '#facc15', '#c084fc', '#f87171'];
+  
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 12,
+      vy: Math.random() * -14 - 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: Math.random() * 6 + 3,
+      life: 1
+    });
+  }
+  
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.vy += 0.3;
+      p.y += p.vy;
+      p.life -= 0.015;
+      
+      if (p.life > 0) {
+        alive = true;
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+    });
+    
+    if (alive) requestAnimationFrame(animate);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  animate();
+}
+
+render();
+setInterval(updateHighlight, 30000);
+</script>
+
+</body>
+</html>
